@@ -6,7 +6,7 @@ const lineReader = require('readline').createInterface({
 
 const initialConsonants = ['ᄀ','ᄁ','ᄂ','ᄃ','ᄄ','ᄅ','ᄆ','ᄇ','ᄈ','ᄉ','ᄊ','ᄋ','ᄌ','ᄍ','ᄎ','ᄏ','ᄐ','ᄑ','ᄒ'];
 const vowels = ['ᅡ','ᅢ','ᅣ','ᅤ','ᅥ',	'ᅦ','ᅧ','ᅨ','ᅩ',	'ᅪ','ᅫ','ᅬ','ᅭ','ᅮ',	'ᅯ', 'ᅰ','ᅱ',	'ᅲ','ᅳ','ᅴ','ᅵ'];
-const finalConsonants = ['ᆨ','ᆩ','ᆪ','ᆫ','ᆬ',	'ᆭ','ᆮ','ᆯ', 'ᆰ',	'ᆱ','ᆲ','ᆳ','ᆴ',	'ᆵ','ᆶ','ᆷ','ᆸ','ᆹ',	'ᆺ','ᆻ','ᆼ','ᆽ','ᆾ',	'ᆿ','ᇀ','ᇁ','ᇂ'];
+const finalConsonants = ['ᆨ','ᆩ','ᆪ','ᆫ','ᆬ','ᆭ','ᆮ','ᆯ', 'ᆰ','ᆱ','ᆲ','ᆳ','ᆴ',	'ᆵ','ᆶ','ᆷ','ᆸ','ᆹ',	'ᆺ','ᆻ','ᆼ','ᆽ','ᆾ',	'ᆿ','ᇀ','ᇁ','ᇂ'];
 
 function generateFrequencies() {
     return new Promise(function(resolve, reject) {
@@ -24,9 +24,9 @@ function generateFrequencies() {
     });
 }
 
-function editDistance1(word) {
+function editDistance1(word, corpus) {
     // Go through each syllable in word and break into letters
-    let results = [];
+    let results = {};
     for(let i = 0;i<word.length;i++) {
         if(!hangul.is_hangeul(word[i])) {
             console.log(word[i] + " is not hangul");
@@ -40,7 +40,8 @@ function editDistance1(word) {
         if(spread[2] == null) {
             for(let j = 0;j<finalConsonants.length;j++) {
                 let block = hangul.join(spread[0],spread[1],finalConsonants[j]);
-                results.push(word.substring(0,i) + block + word.substring(i+1));
+                let correction = word.substring(0,i) + block + word.substring(i+1);
+                results[correction] = corpus[correction];
             }
         }
 
@@ -48,14 +49,32 @@ function editDistance1(word) {
         // initial constants
         for(let j = 0;j<initialConsonants.length;j++) {
             let block = hangul.join(initialConsonants[j],spread[1],spread[2]);
-            results.push(word.substr(0,i) + block + word.substring(i+1))
+            let correction = word.substr(0,i) + block + word.substring(i+1);
+            results[correction] = corpus[correction];
+
+            if(Math.abs(initialConsonants.indexOf(initialConsonants[j]) - initialConsonants.indexOf(spread[0])) === 1) {
+                results[correction] *= 10;
+            }
         }
     }
     return results;
 }
 
 generateFrequencies().then(function(data){
-    let query = '내가';
+    let query = '까요';
     console.log(data[query]);
-    console.log(editDistance1(query));
+
+    let results = editDistance1(query,data);
+    console.log(results);
+
+    /*let maxFreq = 0;
+    let correction = '';
+    for(let i = 0;i<results.length;i++) {
+        let freq = data[results[i]];
+        if(freq > maxFreq) {
+            maxFreq = freq;
+            correction = results[i];
+        }
+    }
+    console.log(correction + ': ' + maxFreq);*/
 });
