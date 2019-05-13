@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/../hanji-spellchecker/hanji-spellchecker.iml" filepath="$PROJECT_DIR$/../hanji-spellchecker/hanji-spellchecker.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Hanji Spellchecker.iml" filepath="$PROJECT_DIR$/Hanji Spellchecker.iml" />
     </modules>
   </component>
 </project>
