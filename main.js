@@ -5,7 +5,7 @@ const lineReader = require('readline').createInterface({
 });
 
 const initialConsonants = ['ᄀ','ᄁ','ᄂ','ᄃ','ᄄ','ᄅ','ᄆ','ᄇ','ᄈ','ᄉ','ᄊ','ᄋ','ᄌ','ᄍ','ᄎ','ᄏ','ᄐ','ᄑ','ᄒ'];
-const vowels = ['ᅡ','ᅢ','ᅣ','ᅤ','ᅥ',	'ᅦ','ᅧ','ᅨ','ᅩ',	'ᅪ','ᅫ','ᅬ','ᅭ','ᅮ',	'ᅯ', 'ᅰ','ᅱ',	'ᅲ','ᅳ','ᅴ','ᅵ'];
+const vowels = ['ㅏ','ㅓ','ㅐ','ㅔ','ㅒ','ㅖ','ㅑ','ㅕ','ㅜ','ㅗ','ㅘ','ㅝ','ㅙ','ㅞ','ㅛ','ㅠ','ㅚ','ㅟ','ㅢ','ㅡ','ㅣ'];
 const finalConsonants = ['ᆨ','ᆩ','ᆪ','ᆫ','ᆬ','ᆭ','ᆮ','ᆯ', 'ᆰ','ᆱ','ᆲ','ᆳ','ᆴ',	'ᆵ','ᆶ','ᆷ','ᆸ','ᆹ',	'ᆺ','ᆻ','ᆼ','ᆽ','ᆾ',	'ᆿ','ᇀ','ᇁ','ᇂ'];
 
 function generateFrequencies() {
@@ -14,7 +14,7 @@ function generateFrequencies() {
         lineReader.on('line', function (line) {
             //console.log('Line from file:', line);
             let data = line.split(" ");
-            WORD_COUNTS[data[0]] = data[1];
+            WORD_COUNTS[data[0]] = parseInt(data[1]);
         });
 
         lineReader.on('close', function () {
@@ -56,12 +56,22 @@ function editDistance1(word, corpus) {
                 results[correction] *= 10;
             }
         }
+        // middle vowel
+        for(let j = 0;j<vowels.length;j++) {
+            let block = hangul.join(spread[0],vowels[j],spread[2]);
+            let correction = word.substr(0,i) + block + word.substring(i+1);
+            results[correction] = corpus[correction];
+
+            if(Math.abs(vowels.indexOf(vowels[j]) - vowels.indexOf(spread[1])) === 1) {
+                results[correction] *= 200;
+            }
+        }
     }
     return results;
 }
 
 generateFrequencies().then(function(data){
-    let query = '까요';
+    let query = '선셍님';
     console.log(data[query]);
 
     let results = editDistance1(query,data);
